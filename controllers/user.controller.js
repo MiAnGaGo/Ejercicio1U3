@@ -88,25 +88,29 @@ const updateById = (req,res) =>{
         })
 }
 
-const login = (req, res)=>{
-    const {email,password} = req.params;
-    const user = req.body;
-
-    const params = {
-        email:email,
+const login = (req , res) => {
+    const {name,password} = req.params;
+    const params ={
+        name:name,
         password:password
     }
-    
-    _user.findOne(params,user)
-        .then((data)=>{
+    _user.findOne(params)
+    .then((data) => {
+        res.status(status.NO_CONTENT);
+        if(data.length == 0){
+            res.status(status.NO_CONTENT);
+            res.json({msg:"No se encontro al usuarios"});
+        }else{
             res.status(status.OK);
-            res.json({msg:'Bienvenido',data:data});
-        })
-        .catch((err)=>{
-            res.status(status.NOT_FOUND);
-            res.json({msg:"Error, usuario no encontrado no actualizado",err:err});
-        })   
+            res.json({msg:"Usuario encontrado!",data:data});
+        }
+    })
+    .catch((err)=>{
+        res.status(status.BAD_REQUEST);
+        res.json({msg:"Error de usuario o contraseña!!!"});
+    })
 }
+
 module.exports = (User) => {
     _user = User;
     return({
