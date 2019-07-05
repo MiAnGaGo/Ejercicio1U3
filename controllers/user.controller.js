@@ -14,7 +14,7 @@ const createUser = (req, res) => {
         })
         .catch((err)=> {
             res.status(400);
-            res.json({msg:"Error!!!!", data:err});
+            res.json({msg:"Error!!!!", err:err});
         })
 }
 
@@ -36,6 +36,22 @@ const findAll = (req, res) => {
         });
 }
 
+const findUne = (req, res) => {
+    const {id}=req.params;
+    const params = {
+        _id:id
+    };
+    _user.findOne(params)
+        .then((data) =>{
+            res.status(status.OK);
+            res.json({msg:"Exito!!!",data:data});
+        })
+        .catch((err) =>{
+            res.status(status.NOT_FOUND);
+            res.json({msg:"Error!!! No se encontro",err:err})
+        });
+}
+
 const deleteByID = (req,res) =>{
     const {id} = req.params;
 
@@ -53,11 +69,52 @@ const deleteByID = (req,res) =>{
         });
 }
 
+const updateById = (req,res) =>{
+    const {id} = req.params;
+    const user = req.body;
+
+    const params = {
+        _id:id
+    }
+    
+    _user.findByIdAndUpdate(params,user)
+        .then((data)=>{
+            res.status(status.OK);
+            res.json({msg:"Update correcto",data:data});
+        })
+        .catch((err)=>{
+            res.status(status.NOT_FOUND);
+            res.json({msg:"Error, documento no actualizado",err:err});
+        })
+}
+
+const login = (req, res)=>{
+    const {email,password} = req.params;
+    const user = req.body;
+
+    const params = {
+        email:email,
+        password:password
+    }
+    
+    _user.findOne(params,user)
+        .then((data)=>{
+            res.status(status.OK);
+            res.json({msg:'Bienvenido',data:data});
+        })
+        .catch((err)=>{
+            res.status(status.NOT_FOUND);
+            res.json({msg:"Error, usuario no encontrado no actualizado",err:err});
+        })   
+}
 module.exports = (User) => {
     _user = User;
     return({
         createUser,
         findAll,
-        deleteByID
+        deleteByID,
+        updateById,
+        findUne,
+        login
     });
 }
